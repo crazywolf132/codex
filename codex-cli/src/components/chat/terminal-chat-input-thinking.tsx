@@ -1,7 +1,8 @@
 import { log, isLoggingEnabled } from "../../utils/agent/log.js";
 import { Box, Text, useInput, useStdin } from "ink";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useInterval } from "use-interval";
+import { getSeasonalFrames, getSeasonName } from "../../utils/seasonal-indicators";
 
 // Retaining a single static placeholder text for potential future use.  The
 // more elaborate randomised thinking prompts were removed to streamline the
@@ -81,24 +82,20 @@ export default function TerminalChatInputThinking({
     { isActive: active },
   );
 
-  // Custom ball animation including the elapsed seconds
-  const ballFrames = [
-    "( ●    )",
-    "(  ●   )",
-    "(   ●  )",
-    "(    ● )",
-    "(     ●)",
-    "(    ● )",
-    "(   ●  )",
-    "(  ●   )",
-    "( ●    )",
-    "(●     )",
-  ];
+  // Get seasonal frames based on current date
+  const [seasonalFrames, setSeasonalFrames] = useState(getSeasonalFrames());
+  const [seasonName, setSeasonName] = useState(getSeasonName());
+
+  // Update seasonal frames when component mounts
+  useEffect(() => {
+    setSeasonalFrames(getSeasonalFrames());
+    setSeasonName(getSeasonName());
+  }, []);
 
   const [frame, setFrame] = useState(0);
 
   useInterval(() => {
-    setFrame((idx) => (idx + 1) % ballFrames.length);
+    setFrame((idx) => (idx + 1) % seasonalFrames.length);
   }, 80);
 
   // Preserve the spinner (ball) animation while keeping the elapsed seconds
@@ -107,7 +104,7 @@ export default function TerminalChatInputThinking({
   // than injecting it directly next to the ball (which caused the counter to
   // move horizontally together with the ball).
 
-  const frameTemplate = ballFrames[frame] ?? ballFrames[0];
+  const frameTemplate = seasonalFrames[frame] ?? seasonalFrames[0];
   const frameWithSeconds = `${frameTemplate} ${thinkingSeconds}s`;
 
   return (
@@ -115,7 +112,7 @@ export default function TerminalChatInputThinking({
       <Box gap={2}>
         <Text>{frameWithSeconds}</Text>
         <Text>
-          Thinking
+          Thinking{seasonName !== "Default" ? ` (${seasonName})` : ""}
           {dots}
         </Text>
       </Box>
