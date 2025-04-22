@@ -385,13 +385,6 @@ export const loadConfig = (
     };
   }
 
-  // Load user-defined safe commands
-  if (Array.isArray(storedConfig.safeCommands)) {
-    config.safeCommands = storedConfig.safeCommands.map(String);
-  } else {
-    config.safeCommands = [];
-  }
-
   // Add rate limit configuration if present, or use defaults
   if (storedConfig.rateLimits) {
     config.rateLimits = storedConfig.rateLimits;
