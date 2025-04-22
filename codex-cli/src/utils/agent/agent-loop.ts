@@ -11,7 +11,6 @@ import type {
 import type { Reasoning } from "openai/resources.mjs";
 
 import {
-  OPENAI_BASE_URL,
   OPENAI_TIMEOUT_MS,
   DEFAULT_RATE_LIMIT_MAX_RETRIES,
   DEFAULT_RATE_LIMIT_INITIAL_RETRY_DELAY_MS,
